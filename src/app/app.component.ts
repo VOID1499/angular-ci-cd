@@ -9,4 +9,9 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'Angular CI/CD';
+  
+  constructor(){
+    console.log("App componente")
+  }
+
 }
