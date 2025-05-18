@@ -42,12 +42,15 @@ jobs:
       runs-on: ubuntu-latest
       environment: production
       steps:
-        - name: Crear archivo de clave privada SSH
+        - name: Crear archivo PEM
           run: |
-            echo "${{secrets.PEM_KEY}}" > ./ssh_key.pem
+            echo "${{ secrets.PEM_KEY }}" > ./ssh_key.pem
             chmod 600 ./ssh_key.pem
-        - name: SSH CONECTION
-          run: ssh ubuntu@52.67.197.11 -i ./ssh_key.pem  
 
-               
+        - name: Agregar clave del host
+          run: ssh-keyscan -H 52.67.197.11  >> ~/.ssh/known_hosts
+
+        - name: SSH Conexión
+          run: ssh -i ./ssh_key.pem ubuntu@52.67.197.11  "echo conexión exitosa"
+
 
