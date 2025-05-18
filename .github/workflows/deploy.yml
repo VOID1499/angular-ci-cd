@@ -4,8 +4,6 @@ on:
     push:
         branches:
             - main
-env:
-  PEM_KEY: "${{secrets.PEM_KEY}}"
 
 jobs:
     build:
@@ -43,8 +41,8 @@ jobs:
     deploy:
       runs-on: ubuntu-latest
       steps:
-        - name: SSH
-          run: echo "Llave pem $PEM_KEY"        
+        - name: SSH CONECTION
+          run: echo "IP $EC2_IP_INSTANCE_PROD"           
 
                
 
