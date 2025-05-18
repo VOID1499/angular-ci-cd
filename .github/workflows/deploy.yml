@@ -42,8 +42,8 @@ jobs:
       runs-on: ubuntu-latest
       environment: production
       steps:
-        - name: SSH CONECTION
-          run: echo "IP $EC2_IP_INSTANCE_PROD"           
+        - name: SSH
+          run: ssh ubuntu@$EC2_IP_INSTANCE_PROD -i ${{secrets.PEM_KEY}}         
 
                
 
