@@ -42,8 +42,12 @@ jobs:
       runs-on: ubuntu-latest
       environment: production
       steps:
-        - name: SSH
-          run: ssh ubuntu@$EC2_IP_INSTANCE_PROD -i ${{secrets.PEM_KEY}}         
+        - name: Crear archivo de clave privada SSH
+          run: |
+            echo "${{secrets.PEM_KEY}}" > ./ssh_key.pem
+            chmod 600 ./ssh_key.pem
+        - name: SSH CONECTION
+          run: ssh ubuntu@$EC2_IP_INSTANCE_PROD -i ./ssh_key.pem  
 
                
 
