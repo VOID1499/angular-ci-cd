@@ -38,8 +38,9 @@ jobs:
             - name: Lint
               run: npm run lint            
                 
-    deploy:
+    deploy-production:
       runs-on: ubuntu-latest
+      environment: production
       steps:
         - name: SSH CONECTION
           run: echo "IP $EC2_IP_INSTANCE_PROD"           
