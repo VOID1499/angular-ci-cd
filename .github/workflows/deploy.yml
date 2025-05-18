@@ -4,7 +4,8 @@ on:
     push:
         branches:
             - main
-
+env:
+  PEM_KEY: "${{secrets.PEM_KEY}}"
 
 jobs:
     build:
@@ -39,7 +40,11 @@ jobs:
             - name: Lint
               run: npm run lint            
                 
-
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: SSH
+          run: echo "Llave pem $PEM_KEY"        
 
                
 
