@@ -47,7 +47,7 @@ jobs:
             echo "${{secrets.PEM_KEY}}" > ./ssh_key.pem
             chmod 600 ./ssh_key.pem
         - name: SSH CONECTION
-          run: ssh ubuntu@$EC2_IP_INSTANCE_PROD -i ./ssh_key.pem  
+          run: ssh ubuntu@${{env.EC2_IP_INSTANCE_PROD}} -i ./ssh_key.pem  
 
                
 
