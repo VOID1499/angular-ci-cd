@@ -50,10 +50,10 @@ jobs:
         - name: Agregar clave del host
           run: |
             mkdir -p ~/.ssh
-            ssh-keyscan -H 52.67.197.11 >> ~/.ssh/known_hosts
+            ssh-keyscan -H ${{secrets.EC2_IP}} >> ~/.ssh/known_hosts
 
 
         - name: SSH Conexión
-          run: ssh -i ./ssh_key.pem ubuntu@52.67.197.11  "echo conexión exitosa"
+          run: ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}}  "echo conexión exitosa"
 
 
