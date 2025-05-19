@@ -6,6 +6,11 @@ on:
             - main
 
 jobs:
+    avoid_reduncy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Cancel Previous Runs
+              uses: styfle/cancel-workflow-action  
     build:
         runs-on: ubuntu-latest
         steps:
@@ -39,9 +44,17 @@ jobs:
               run: npm run lint            
                 
     deploy-production:
+      needs: [lint,build]
       runs-on: ubuntu-latest
       environment: production
       steps:
+
+        - name: Descargar build
+          uses: actions/download-artifact@v4
+          with:
+            name: dist
+            path: dist
+        
         - name: Crear archivo PEM
           run: |
             echo "${{ secrets.PEM_KEY }}" > ./ssh_key.pem
@@ -52,8 +65,8 @@ jobs:
             mkdir -p ~/.ssh
             ssh-keyscan -H ${{secrets.EC2_IP}} >> ~/.ssh/known_hosts
 
-
         - name: SSH Conexión
           run: ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}}  "echo conexión exitosa"
+
 
 
