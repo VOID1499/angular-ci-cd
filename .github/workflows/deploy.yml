@@ -62,5 +62,11 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
 
-      - name: SSH Conexión
-        run: ssh -i ./ssh_key.pem ubuntu@${{ secrets.EC2_IP }} "echo conexión exitosa"
+      - name: Subir archivos a carpeta temporal
+        run: |
+          scp -i ./ssh_key.pem -r dist/angular-ci-cd/browser/* ubuntu@${{secrets.EC2_IP}}:/home/ubuntu/temp/
+
+      - name: Mover archivos a /var/www/ con permisos
+        run: |
+          ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}} "sudo mv /home/ubuntu/temp/* /var/www/"
+ 
