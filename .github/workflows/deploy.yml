@@ -62,6 +62,15 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
 
+      - name: Revisar directorio dist
+        run: |
+          echo "Ruta actual:"
+          pwd
+          echo "Contenido del directorio actual:"
+          ls -la   
+      - name: Ver contenido completo de la build
+        run: ls -R dist  
+          
       - name: Subir archivos a carpeta temporal
         run: |
           scp -i ./ssh_key.pem -r dist/angular-ci-cd/browser/* ubuntu@${{secrets.EC2_IP}}:/home/ubuntu/temp/
