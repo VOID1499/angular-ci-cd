@@ -1,70 +1,66 @@
 name: Deploy
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    avoid_reduncy:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Cancel Previous Runs
-              uses: styfle/cancel-workflow-action  
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                fetch-depth: 0
-            - uses: actions/setup-node@v2
-              with:
-                node-version: "20.11.1"
-            - name: Install dependencies
-              run: npm ci
-            - name: Run build
-              run: npm run build         
-            - uses: actions/upload-artifact@v4
-              with:
-                name: dist
-                path: dist/angular-ci-cd/browser  
-    
-    lint:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                fetch-depth: 0
-            - uses: actions/setup-node@v2
-              with:
-                node-version: "20.11.1"
-            - name: Install dependencies
-              run: npm ci
-            - name: Lint
-              run: npm run lint            
-                
-    deploy-production:
-        needs: [lint,build]
-        runs-on: ubuntu-latest
-        environment: production
-        steps:
-          - uses: actions/download-artifact@v4
-            with:
-              name: dist
-              path: dist
-          
-          - name: Crear archivo PEM
-            run: |
-              echo "${{ secrets.PEM_KEY }}" > ./ssh_key.pem
-              chmod 600 ./ssh_key.pem
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "20.11.1"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run build
+        run: npm run build         
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/angular-ci-cd/browser  
 
-          - name: Agregar clave del host
-            run: |
-              mkdir -p ~/.ssh
-              ssh-keyscan -H ${{secrets.EC2_IP}} >> ~/.ssh/known_hosts
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "20.11.1"
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint            
 
-          - name: SSH Conexión
-            run: ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}}  "echo conexión exitosa"
+  deploy-production:
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      
+      - name: Crear archivo PEM
+        run: |
+          printf "%s" "${{ secrets.PEM_KEY }}" > ./ssh_key.pem
+          chmod 600 ./ssh_key.pem
 
+      - name: Agregar clave del host
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
 
-
+      - name: SSH Conexión
+        run: ssh -i ./ssh_key.pem ubuntu@${{ secrets.EC2_IP }} "echo conexión exitosa"
