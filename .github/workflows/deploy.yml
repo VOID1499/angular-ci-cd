@@ -44,29 +44,27 @@ jobs:
               run: npm run lint            
                 
     deploy-production:
-      needs: [lint,build]
-      runs-on: ubuntu-latest
-      environment: production
-      steps:
+        needs: [lint,build]
+        runs-on: ubuntu-latest
+        environment: production
+        steps:
+          - uses: actions/download-artifact@v4
+            with:
+              name: dist
+              path: dist
+          
+          - name: Crear archivo PEM
+            run: |
+              echo "${{ secrets.PEM_KEY }}" > ./ssh_key.pem
+              chmod 600 ./ssh_key.pem
 
-        - name: Descargar build
-          uses: actions/download-artifact@v4
-          with:
-            name: dist
-            path: dist
-        
-        - name: Crear archivo PEM
-          run: |
-            echo "${{ secrets.PEM_KEY }}" > ./ssh_key.pem
-            chmod 600 ./ssh_key.pem
+          - name: Agregar clave del host
+            run: |
+              mkdir -p ~/.ssh
+              ssh-keyscan -H ${{secrets.EC2_IP}} >> ~/.ssh/known_hosts
 
-        - name: Agregar clave del host
-          run: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H ${{secrets.EC2_IP}} >> ~/.ssh/known_hosts
-
-        - name: SSH Conexión
-          run: ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}}  "echo conexión exitosa"
+          - name: SSH Conexión
+            run: ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}}  "echo conexión exitosa"
 
 
 
