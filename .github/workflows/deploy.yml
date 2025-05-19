@@ -77,5 +77,5 @@ jobs:
 
       - name: Mover archivos a /var/www/ con permisos
         run: |
-          ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}} "sudo mv /home/ubuntu/temp/* /var/www/"
+          ssh -i ./ssh_key.pem ubuntu@${{secrets.EC2_IP}} "sudo mv /home/ubuntu/temp/* /var/www/html"
  
