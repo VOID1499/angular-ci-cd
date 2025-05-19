@@ -70,10 +70,10 @@ jobs:
           ls -la   
       - name: Ver contenido completo de la build
         run: ls -R dist  
-          
+
       - name: Subir archivos a carpeta temporal
         run: |
-          scp -i ./ssh_key.pem -r dist/angular-ci-cd/browser/* ubuntu@${{secrets.EC2_IP}}:/home/ubuntu/temp/
+          scp -i ./ssh_key.pem -r dist/* ubuntu@${{secrets.EC2_IP}}:/home/ubuntu/temp/
 
       - name: Mover archivos a /var/www/ con permisos
         run: |
